@@ -7,51 +7,9 @@ import { useDisclosure } from "@mantine/hooks";
 import { closeModal } from "@mantine/modals";
 import { useNavigate } from "react-router";
 import { Tree, TreeNode } from "react-organizational-chart";
+import { ActionIcon } from '@mantine/core';
+import { IconAdjustments } from '@tabler/icons-react';
 
-function buildTree(nodes) {
-  const tree = {};
-
-  nodes.forEach((node) => {
-    if (!tree[node.parentId]) {
-      tree[node.parentId] = { children: [] };
-    }
-
-    const newNode = {
-      id: node.id,
-      name: node.name,
-      description: node.description,
-      children: [],
-    };
-
-    tree[node.parentId].children.push(newNode);
-    tree[node.id] = newNode;
-  });
-
-  return tree[0].children;
-}
-
-const TreeChildNode = ({ node }) => (
-  <div className="flex flex-col justify-center m-4">
-    <div className="">{node.name}</div>
-    
-    {node.children && node.children.length > 0 && (
-      <div className="flex flex-row justify-center">
-        {node.children.map((child) => (
-          <TreeNode key={child.id} node={child} label={child.name} />
-        ))}
-      </div>
-    )}
-  </div>
-
-);
-
-const CustomTree = ({ tree }) => (
-  <Tree
-    label={tree.map((node) => ( // <div className="flex flex-col justify-center m-10 ml-80">
-      <TreeChildNode key={node.id} node={node} />
-    ))}
-  ></Tree>
-);
 
 function PostionTree() {
   const dispatch = useDispatch();
@@ -101,25 +59,81 @@ function PostionTree() {
   const renderActionsButtons = (label) => {
     if (hoveredNode === label) {
       return (
-        <Group>
-          <Button variant="outline" size="xs" onClick={viewDetailHandler}>
-            <IconView360 />
-          </Button>
-          <Button variant="outline" size="xs" onClick={addHandler}>
+        <Group className="flex flex-row gap-0 min-w-40">
+          <ActionIcon variant="outline" size="xs" onClick={viewDetailHandler}>
+          <IconView360 size={10} />
+    </ActionIcon>
+          
+          <ActionIcon variant="outline" size="xs" onClick={addHandler}>
             <IconPlus />
-          </Button>
-          <Button variant="outline" size="xs" onClick={deleteHandler}>
+          </ActionIcon>
+          <ActionIcon variant="outline" size="xs" onClick={deleteHandler}>
             <IconTrash />
-          </Button>
+         </ActionIcon>
         </Group>
       );
     }
     return null;
   };
 
+  function buildTree(nodes) {
+    const tree = {};
+  
+    nodes.forEach((node) => {
+      if (!tree[node.parentId]) {
+        tree[node.parentId] = { children: [] };
+      }
+  
+      const newNode = {
+        id: node.id,
+        name: node.name,
+        description: node.description,
+        children: [],
+      };
+  
+      tree[node.parentId].children.push(newNode);
+      tree[node.id] = newNode;
+    });
+  
+    return tree[0].children;
+  }
+  const TreeChildNode = ({ node }) => (
+    <div className="flex flex-col w-full">
+      <div   className='flex justify-center  card shadow-sm hover:text-green-600 hover:font-bold border-green-600 text-2xl hover:bg-green-400 '
+ onMouseEnter={() => handleNodeHover(node.name)}
+  onMouseLeave={handleNodeLeave} ><span className="flex justify-end"> {renderActionsButtons(node.name)}</span> {node.name}   </div>
+  
+      {node.children && node.children.length > 0 && (
+        <div className="flex flex-row">
+          {node.children.map((child) => (
+            <TreeNode className="" centered key={String(child.id)} node={child}  label={<div className=""><TreeChildNode node={child} /></div> } />
+              
+             
+          ))}
+        </div>
+      )}
+    </div>
+  );
+  
+  
+  
+  const CustomTree = ({ tree }) => (
+    <Tree
+    lineColor={"green"}
+    lineWidth="2px"
+    lineBorderRadius="10px"
+    lineHeight="20px"
+      label={tree.map((node) => ( // <div className="flex flex-col justify-center m-10 ml-80">
+        <TreeChildNode key={node.id} node={node} />
+      ))}
+    > 
+   </Tree>
+  );
+
   return (
     <>
-      <CustomTree tree={treeData} />
+    <CustomTree tree={treeData} />
+      
 
       <Modal
         opened={openeAddChildModal}

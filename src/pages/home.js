@@ -14,8 +14,7 @@ const Home = () => {
   // console.log(data);
 
   return (
-    <div className="card w-4">
-      <h1 className="text-3xl font-bold stroke-yellow-900 underline">hello</h1>
+    <div className="w-full">
       <PostionTree />
       {/* <Tasktree /> */}
       {/* <EmployeeList />
