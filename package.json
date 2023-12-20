@@ -15,7 +15,7 @@
     "@mantine/spotlight": "^5.8.4",
     "@mantine/tiptap": "^5.8.4",
     "@reduxjs/toolkit": "^1.9.1",
-    "@tabler/icons": "^1.114.0",
+    "@tabler/icons": "^1.119.0",
     "@tabler/icons-react": "^2.44.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

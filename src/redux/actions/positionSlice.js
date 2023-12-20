@@ -14,7 +14,7 @@ export const fetchPositions = createAsyncThunk("fetchPositions", async () => {
 
 export const addPosition = createAsyncThunk("addPosition", async (positionData) => {
   try {
-    const response = await api.post("/insert", positionData);
+    const response = await api.post("/addposition", positionData);
     return response.data;
   } catch (error) {
     console.error("Error adding position:", error);
@@ -22,7 +22,7 @@ export const addPosition = createAsyncThunk("addPosition", async (positionData) 
   }
 });
 
-export const updatePosition = createAsyncThunk("updatePosition", async ({ id, updatedData }) => {
+export const updatePosition = createAsyncThunk("updateposition", async ({ id, updatedData }) => {
   try {
     const response = await api.put(`/update/${id}`, updatedData);
     return response.data;
@@ -32,9 +32,10 @@ export const updatePosition = createAsyncThunk("updatePosition", async ({ id, up
   }
 });
 
-export const deletePosition = createAsyncThunk("deletePosition", async (id) => {
+export const deletePosition  = createAsyncThunk("deletePosition", async (id) => {
+  console.log("delete is callledddd", id)
   try {
-    const response = await api.delete(`/delete/${id}`);
+    const response = await api.delete(`/deleteposition`, {data: {"positionId" :id}});
     return response.data;
   } catch (error) {
     console.error("Error deleting position:", error);
