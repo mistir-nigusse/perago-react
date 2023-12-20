@@ -1,12 +1,44 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../utils/api";
 
+// Async Thunks for CRUD operations
 export const fetchPositions = createAsyncThunk("fetchPositions", async () => {
   try {
     const response = await api.get("/getall");
     return response.data;
   } catch (error) {
     console.error("Error fetching positions:", error);
+    throw error;
+  }
+});
+
+export const addPosition = createAsyncThunk("addPosition", async (positionData) => {
+  try {
+    const response = await api.post("/insert", positionData);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding position:", error);
+    throw error;
+  }
+});
+
+export const updatePosition = createAsyncThunk("updatePosition", async ({ id, updatedData }) => {
+  try {
+    const response = await api.put(`/update/${id}`, updatedData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating position:", error);
+    throw error;
+  }
+});
+
+export const deletePosition = createAsyncThunk("deletePosition", async (id) => {
+  try {
+    const response = await api.delete(`/delete/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting position:", error);
+    throw error;
   }
 });
 
@@ -18,40 +50,34 @@ const positionsSlice = createSlice({
     error: false,
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchPositions.pending, (state, action) => {
-      state.isLoading = true;
-    });
-    builder.addCase(fetchPositions.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.data = action.payload;
-    });
-    builder.addCase(fetchPositions.rejected, (state, action) => {
-      state.error = true;
-    });
+    builder
+      .addCase(fetchPositions.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchPositions.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.data = action.payload;
+      })
+      .addCase(fetchPositions.rejected, (state) => {
+        state.error = true;
+      })
+      .addCase(addPosition.fulfilled, (state, action) => {
+        state.data = [...state.data, action.payload];
+      })
+      .addCase(updatePosition.fulfilled, (state, action) => {
+        const updatedIndex = state.data.findIndex((pos) => pos.id === action.payload.id);
+        if (updatedIndex !== -1) {
+          state.data[updatedIndex] = action.payload;
+        }
+      })
+      .addCase(deletePosition.fulfilled, (state, action) => {
+        state.data = state.data.filter((pos) => pos.id !== action.payload.id);
+      });
   },
-  // reducers: {
-  //   setpositions: (state, action) => {
-
-  //    state.push(action.payload);
-  //       return action.payload;
-  //   },
-  //   addPosition: (state, action) => {
-  //     state.push(action.payload);
-  //   },
-  //   updatePosition: (state, action) => {
-  //     const index = state.findIndex(position => position.id === action.payload.id);
-  //     if (index !== -1) {
-  //       state[index] = action.payload;
-  //     }
-  //   },
-  //   deleteposition: (state, action) => {
-  //     return state.filter(position => position.id !== action.payload);
-  //   },
-  // },
 });
 
-export const { setpositions, addposition, updateposition, deleteposition } =
-  positionsSlice.actions;
+export default positionsSlice.reducer;
+
 
 // export const createposition = position => async dispatch => {
 //   try {
@@ -79,4 +105,3 @@ export const { setpositions, addposition, updateposition, deleteposition } =
 //   }
 // };
 
-export default positionsSlice.reducer;
