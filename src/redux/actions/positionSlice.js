@@ -11,31 +11,56 @@ export const fetchPositions = createAsyncThunk("fetchPositions", async () => {
     throw error;
   }
 });
+export const fetchPositionDetail = createAsyncThunk(
+  "fetchPositionDetail",
+  async (id) => {
 
-export const addPosition = createAsyncThunk("addPosition", async (positionData) => {
-  try {
-    const response = await api.post("/addposition", positionData);
-    return response.data;
-  } catch (error) {
-    console.error("Error adding position:", error);
-    throw error;
+    try {
+      const response = await api.post(`/fetchpositiondetail`, {"positionId": 1}
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching position detail:", error);
+      throw error;
+    }
   }
-});
+);
 
-export const updatePosition = createAsyncThunk("updateposition", async ({ id, updatedData }) => {
-  try {
-    const response = await api.put(`/update/${id}`, updatedData);
-    return response.data;
-  } catch (error) {
-    console.error("Error updating position:", error);
-    throw error;
+export const addPosition = createAsyncThunk(
+  "addPosition",
+  async (positionData) => {
+    try {
+      const response = await api.post("/addposition", {params : {id: 1}} , positionData);
+      console.log("called")
+      return response.data;
+    } catch (error) {
+      console.error("Error adding position:", error);
+      throw error;
+    }
   }
-});
+);
 
-export const deletePosition  = createAsyncThunk("deletePosition", async (id) => {
-  console.log("delete is callledddd", id)
+export const updatePosition = createAsyncThunk(
+  "updateposition",
+
+  async ( params, updatedPositionData ) => {
+    console.log(params)
+    try{
+      const response = await api.put(`/updateposition`, updatedPositionData);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating position:", error);
+      throw error;
+    }
+  }
+);
+
+export const deletePosition = createAsyncThunk("deletePosition", async (id) => {
+  console.log("delete is callledddd", id);
   try {
-    const response = await api.delete(`/deleteposition`, {data: {"positionId" :id}});
+    const response = await api.delete(`/deleteposition`, {
+      data: { positionId: id },
+    });
     return response.data;
   } catch (error) {
     console.error("Error deleting position:", error);
@@ -62,11 +87,24 @@ const positionsSlice = createSlice({
       .addCase(fetchPositions.rejected, (state) => {
         state.error = true;
       })
+      // .addCase(getPositionDetail.rejected, (state) => {
+      //   state.error = true;
+      // })
+      // .addCase(getPositionDetail.pending, (state) => {
+      //   state.isLoading = true;
+      // })
+      .addCase(fetchPositionDetail.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.data = action.payload;
+      })
+
       .addCase(addPosition.fulfilled, (state, action) => {
         state.data = [...state.data, action.payload];
       })
       .addCase(updatePosition.fulfilled, (state, action) => {
-        const updatedIndex = state.data.findIndex((pos) => pos.id === action.payload.id);
+        const updatedIndex = state.data.findIndex(
+          (pos) => pos.id === action.payload.id
+        );
         if (updatedIndex !== -1) {
           state.data[updatedIndex] = action.payload;
         }
@@ -78,7 +116,6 @@ const positionsSlice = createSlice({
 });
 
 export default positionsSlice.reducer;
-
 
 // export const createposition = position => async dispatch => {
 //   try {
@@ -105,4 +142,3 @@ export default positionsSlice.reducer;
 //     console.error('Error deleting position:', error);
 //   }
 // };
-
