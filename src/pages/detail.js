@@ -16,8 +16,11 @@ import {
 } from "@mantine/core";
 import { IconEdit, IconView360, IconPlus } from "@tabler/icons";
 import { useDisclosure } from "@mantine/hooks";
+import {useParams} from "react-router-dom"
 
 const Detail = () => {
+   const params = useParams();
+   const positionId = params.id;
   const dispatch = useDispatch();
   const position = useSelector((state) => state.position.data);
   const [positionName, setPositionName] = useState("");
@@ -25,7 +28,7 @@ const Detail = () => {
   const [positionParent, setPositionParent] = useState("");
 
   useEffect(() => {
-    dispatch(fetchPositionDetail(3));
+    dispatch(fetchPositionDetail(positionId));
   }, [dispatch]);
   const [openEditModal, { open: toggleEditModal, close: closeEditModal }] =
     useDisclosure();
@@ -39,13 +42,17 @@ const Detail = () => {
     try {
       const id = position.organization_hierarchy[0].id;
 
-      const updatedPositionData = {positionId:1, parentId:0, name:"again", description:"workidnfg"}
-            // name : positionName,
-        // parentId : positionParent,
-        // description :positionDescription
-      
+      const updatedPositionData = {
+        positionId: id,
+        parentId: positionParent,
+        name: positionName,
+        description: positionDescription,
+      };
+      // name : positionName,
+      // parentId : positionParent,
+      // description :positionDescription
 
-      await dispatch(updatePosition( updatedPositionData));
+      await dispatch(updatePosition(updatedPositionData));
       closeEditModal();
     } catch (error) {
       console.log("Error updating position", error);

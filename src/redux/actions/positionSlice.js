@@ -16,7 +16,7 @@ export const fetchPositionDetail = createAsyncThunk(
   async (id) => {
 
     try {
-      const response = await api.post(`/fetchpositiondetail`, {"positionId": 1}
+      const response = await api.post(`/fetchpositiondetail`, {"positionId": id}
       );
       return response.data;
     } catch (error) {

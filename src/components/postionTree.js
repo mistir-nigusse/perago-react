@@ -15,10 +15,12 @@ import { ActionIcon } from "@mantine/core";
 import { IconAdjustments } from "@tabler/icons-react";
 import CustomModal from "./customModal";
 function PostionTree() {
- 
   const dispatch = useDispatch();
   const positions = useSelector((state) => state.position.data);
   const [treeData, setTreeData] = useState([]);
+  const [positionName, setPositionName] = useState("");
+  const [positionDescription, setPositionDescription] = useState("");
+  const [positionParent, setPositionParent] = useState("");
 
   useEffect(() => {
     dispatch(fetchPositions());
@@ -60,7 +62,7 @@ function PostionTree() {
     toggleDeleteDialog();
   };
   const viewDetailHandler = (e) => {
-    navigate("/detail");
+    navigate(`/detail/${e.id}`);
   };
 
   const addPositionHandler = async () => {
@@ -68,9 +70,9 @@ function PostionTree() {
     try {
       if (selectedNodeId) {
         const postionData = {
-          parentId: 1,
-          description: "tesstttt",
-          name: "HR",
+          parentId: selectedNodeId,
+          description: positionDescription,
+          name: positionName,
         };
         // Dispatch the deletePosition async thunk with the selectedNodeId
         await dispatch(addPosition(postionData));
@@ -105,20 +107,26 @@ function PostionTree() {
   const renderActionsButtons = (id) => {
     if (hoveredNode === id) {
       return (
-        <Group className="flex flex-row gap-0 min-w-40">
-          <ActionIcon variant="outline" size="xs" onClick={viewDetailHandler}>
+        <Group className="flex flex-row gap-1 min-w-40">
+          <ActionIcon
+            variant="outline"
+            color="orange"
+            size="xs"
+            onClick={viewDetailHandler.bind(null, { id })}
+          >
             <IconView360 size={10} />
           </ActionIcon>
 
           <ActionIcon
             variant="outline"
+            color="green"
             size="xs"
-
             onClick={addHandler.bind(null, { id })}
           >
             <IconPlus />
           </ActionIcon>
           <ActionIcon
+          color="red"
             variant="outline"
             size="xs"
             onClick={deleteHandler.bind(null, { id })}
@@ -155,15 +163,15 @@ function PostionTree() {
   const TreeChildNode = ({ node }) => (
     <div className="flex flex-col w-full">
       <div
-        className="flex justify-center  card shadow-sm hover:text-green-600 hover:font-bold border-green-600 text-2xl hover:bg-green-400 "
+        className="  justify-center mb-4 p-2  hover:font-semibold    text-xl  grid  grid-flow-col-dense gap-1 "
         onMouseEnter={() => handleNodeHover(node.id)}
         onMouseLeave={handleNodeLeave}
       >
-        <span className="flex justify-end">
+        <span className="shadow-xl rounded-lg min-w-max w-40  bg-slate-300 m-1 p-3 flex-3 ">
           {" "}
-          {renderActionsButtons(node.id)}
+          {node.name}
         </span>{" "}
-        {node.name}{" "}
+        <span className="flex-1">{renderActionsButtons(node.id)}</span>
       </div>
 
       {node.children && node.children.length > 0 && (
@@ -175,7 +183,7 @@ function PostionTree() {
               key={String(child.id)}
               node={child}
               label={
-                <div className="">
+                <div className=" ">
                   <TreeChildNode node={child} />
                 </div>
               }
@@ -188,10 +196,11 @@ function PostionTree() {
 
   const CustomTree = ({ tree }) => (
     <Tree
+      nodePadding="0px"
       lineColor={"green"}
       lineWidth="2px"
       lineBorderRadius="10px"
-      lineHeight="20px"
+      lineHeight="50px"
       label={tree.map(
         (
           node // <div className="flex flex-col justify-center m-10 ml-80">
@@ -211,10 +220,18 @@ function PostionTree() {
         title="Add child position"
         centered
       >
-        <TextInput label="Parent" placeholder="Child position's name" />
-
-        <TextInput label="Name" placeholder="Child position's name" />
-        <TextInput label="Description" placeholder="Description" />
+        <TextInput
+          label="Name"
+          placeholder="Child position's name"
+          value={positionName}
+          onChange={(e) => setPositionName(e.target.value)}
+        />
+        <TextInput
+          label="Description"
+          placeholder="Description"
+          value={positionDescription}
+          onChange={(e) => setPositionDescription(e.target.value)}
+        />
         <Group>
           <Button variant="outlined" type="cancel" onClick={addPositionHandler}>
             submit

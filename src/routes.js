@@ -23,7 +23,7 @@ const routes = [
     // type: "",
     name: "Detail",
     key: "detail",
-    route: "/detail",
+    route: "/detail/:id",
     component: <Detail/>,
   },
 ];
