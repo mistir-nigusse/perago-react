@@ -30,7 +30,7 @@ export const addPosition = createAsyncThunk(
   "addPosition",
   async (positionData) => {
     try {
-      const response = await api.post("/addposition", {params : {id: 1}} , positionData);
+      const response = await api.post("/addposition", positionData);
       console.log("called")
       return response.data;
     } catch (error) {
@@ -43,10 +43,12 @@ export const addPosition = createAsyncThunk(
 export const updatePosition = createAsyncThunk(
   "updateposition",
 
-  async ( params, updatedPositionData ) => {
-    console.log(params)
+  async ( updatedPositionData ) => {
+   
     try{
-      const response = await api.put(`/updateposition`, updatedPositionData);
+      // const response = await api.put(`/update`, {positionId:1, parentId:0, name:"testtt", description:"workidnfg"});
+      const response = await api.put(`/update`, updatedPositionData);
+
       return response.data;
     } catch (error) {
       console.error("Error updating position:", error);

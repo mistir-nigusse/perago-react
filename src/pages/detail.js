@@ -39,16 +39,13 @@ const Detail = () => {
     try {
       const id = position.organization_hierarchy[0].id;
 
-      const updatedPositionData = {
-        name: "abc",
-        parentId: 0,
-        description: "dcdmkdjffv",
-        // name : positionName,
+      const updatedPositionData = {positionId:1, parentId:0, name:"again", description:"workidnfg"}
+            // name : positionName,
         // parentId : positionParent,
         // description :positionDescription
-      };
+      
 
-      await dispatch(updatePosition(id, updatedPositionData));
+      await dispatch(updatePosition( updatedPositionData));
       closeEditModal();
     } catch (error) {
       console.log("Error updating position", error);
